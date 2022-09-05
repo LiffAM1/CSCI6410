@@ -1,4 +1,4 @@
-import sys, os, traceback
+import sys
 
 # Node class for implementing singly-linked list
 class Node:
@@ -140,16 +140,17 @@ class CheckMatchings:
         matchedMen = [m[0] for m in self.matchings]
         matchedWomen = [m[1] for m in self.matchings]
 
+        expected = [i for i in range(1,len(self.matchings)+1)]
+
         errors = []
-        for m in set(matchedMen):
-            if matchedMen.count(m) > 1:
-                errors.append(f"Man {m} appears in {matchedMen.count(m)} couples.")
-        for w in set(matchedWomen):
-            if matchedWomen.count(w) > 1:
-                errors.append(f"Woman {w} appears in {matchedWomen.count(w)} couples.")
+        for i in set(expected):
+            if matchedMen.count(i) != 1:
+                errors.append(f"Man {i} appears in {matchedMen.count(i)} couples.")
+            if matchedWomen.count(i) != 1:
+                errors.append(f"Woman {i} appears in {matchedWomen.count(i)} couples.")
 
         if errors:
-            print("This set of matchings is not perfect because of the following reasons:")
+            print("This set of matchings is not perfect:")
             for e in errors:
                 print(e)
             return False
@@ -157,7 +158,7 @@ class CheckMatchings:
 
     # Method to check the stability of a given set of matchings, based on mens' and womens' preferences
     def checkStability(self):
-        errors = []
+        error = None
 
         for match in self.matchings:
             man = match[0]
@@ -170,13 +171,13 @@ class CheckMatchings:
                 preferences = self.womensPreferences[currentWoman]
                 currentMatching = self.partners[currentWoman]
                 if preferences[man] < preferences[currentMatching]:
-                    errors.append(f"Man {man} and Woman {woman} are an unstable couple. Man {man} prefers Woman {currentWoman} and she prefers him over her current partner, Man {currentMatching}. Man {man} and Woman {currentWoman} may elope.")
+                    error = f"Man {man} and Woman {woman} are an unstable couple. Man {man} prefers Woman {currentWoman} and she prefers him over her current partner, Man {currentMatching}. Man {man} and Woman {currentWoman} may elope."
+                    break
                 index += 1
                 currentWoman = self.mensPreferences[man][index]
-        if errors:
-            print("This set of matchings is perfect but not stable because of the following reasons:")
-            for e in errors:
-                print(e)
+        if error:
+            print("This set of matchings is perfect but not stable:")
+            print(error)
             return False
         return True
 
@@ -200,20 +201,22 @@ class MainApplication:
         womenFile = args[3]
         matchingsFile = args[4]
 
-        # Read in mens' and womens' preferences from indicated files
-        self.mensPreferences = self.readFile(menFile)
-        self.womensPreferences = self.readFile(womenFile)
-
         # Do either find or check task, depending on the input
-        if (self.task == "find"):
-            self.printInitialInput()
-            self.writeFile(matchingsFile,GaleShapelyMatching(self.mensPreferences,self.womensPreferences).matches)
-        elif (self.task == "check"):
-            self.matchings = self.readFile(matchingsFile,False)
-            self.printInitialInput()
-            CheckMatchings(self.mensPreferences,self.womensPreferences,self.matchings)
-        else:
-            print("Error: invalid input! Please try again!")
+        try:
+            self.mensPreferences = self.readFile(menFile)
+            self.womensPreferences = self.readFile(womenFile)
+            if (self.task == "find"):
+                self.printInitialInput()
+                self.writeFile(matchingsFile,GaleShapelyMatching(self.mensPreferences,self.womensPreferences).matches)
+            elif (self.task == "check"):
+                self.matchings = self.readFile(matchingsFile,False)
+                self.printInitialInput()
+                CheckMatchings(self.mensPreferences,self.womensPreferences,self.matchings)
+            else:
+                print("Error: invalid input! Please try again!")
+                return
+        except BaseException as err:
+            print(f"Analysis stopped. An error occurred: {type(err)}: {str(err)}")
             return
 
         print("\nAnalysis complete!")
@@ -240,6 +243,7 @@ class MainApplication:
         for i,w in enumerate(self.womensPreferences):
             print(f"Woman {str(i+1)}:")
             print(", ".join([f"{str(ordinal(j+1))}: Man {str(m)}" for j,m in enumerate(w)]))
+        print("\nBeginning analysis...")
 
     # Method to read expected format from a file
     def readFile(self,fileName,skipFirst=True):
