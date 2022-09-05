@@ -1,3 +1,15 @@
+# Name: Abigail Holloway
+# Email: hollowayab21@students.ecu.edu
+# Date: 09/05/2022
+# Class: CSCI6410
+# Assignment: Assignment 1 - Stable Matching
+# Execution instructions:
+#   Run this program using the command format:
+#       python3 galeshapely.py <task> <men prefs> <women prefs> <matchings>
+#   For example:
+#       python3 galeshapely.py find men women matchings
+#       python3 galeshapely.py check men woemn matchings
+
 import sys
 
 # Node class for implementing singly-linked list
@@ -193,7 +205,7 @@ class MainApplication:
         args = sys.argv
 
         if len(args) != 5:
-            print("Error: incorrect number of arguments! Please try again!")
+            print("Error: incorrect number of arguments provided. Please try again!")
             return
 
         self.task = args[1]
@@ -213,7 +225,7 @@ class MainApplication:
                 self.printInitialInput()
                 CheckMatchings(self.mensPreferences,self.womensPreferences,self.matchings)
             else:
-                print("Error: invalid input! Please try again!")
+                print(f"Error: cannot process task {self.task}. Please try again!")
                 return
         except BaseException as err:
             print(f"Analysis stopped. An error occurred: {type(err)}: {str(err)}")
