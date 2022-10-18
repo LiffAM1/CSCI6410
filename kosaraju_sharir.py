@@ -70,7 +70,9 @@ class KosarajuSharir:
 		# Print the resulting connected components
 		print(f"The given graph has {len(self.connectedComponents)} Strongly Connected Components.")
 		for scc,n in self.connectedComponents.items():
+			n.sort()
 			print(f"Strongly Connected Component #{scc}: {', '.join([str(i) for i in n])}")
+		self.constructKernelGraph()
 
 	def phaseOne(self):
 		self.phase = 1
@@ -118,5 +120,29 @@ class KosarajuSharir:
 			# to the end of the topological ordering
 			if self.phase == 1:
 				self.topological.append(node)
+
+	def constructKernelGraph(self):
+		kernelGraph = {n:[] for n in self.connectedComponents.keys()}
+
+		# For each node in the kernel DAG, figure out which other nodes it connects to
+		for scc,nodes in self.connectedComponents.items():
+			for otherNode in kernelGraph.keys():
+				if otherNode == scc:
+					continue
+				done = False
+				for i in nodes:
+					for j in self.connectedComponents[otherNode]:
+						if j in self.graph[i]:
+							kernelGraph[scc].append(otherNode)
+							done = True
+							break
+					if done:
+						break
+
+		# Print result using same format as the graph input
+		print("The Kernel Graph for the input is:")
+		for k,e in kernelGraph.items():
+			for n in e:
+				print(f"{k} {n}")
 
 KosarajuSharir()
