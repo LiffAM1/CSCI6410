@@ -1,3 +1,12 @@
+# Name: Abigail Holloway
+# Email: hollowayab21@students.ecu.edu
+# Date: 10/17/2022
+# Class: CSCI6410
+# Assignment: Assignment 3 - Kosaraju Sharir
+# Execution instructions:
+#   Run this program using the command format:
+#       python3 kosaraju_sharir.py
+#   The program accepts inputs one at a time and validates each input for correct formatting
 import sys
 
 class KosarajuSharir:
@@ -43,7 +52,6 @@ class KosarajuSharir:
 			orderedPair = []
 			try :
 				vertices = newEdge.split(" ")
-				print(vertices)
 				if len(vertices) != 2:
 					raise
 				for v in vertices:
@@ -84,7 +92,6 @@ class KosarajuSharir:
 		while len(self.topological) < self.nodesCount:
 			self.dfs(nextNode,discovered,self.reverseGraph)
 			remaining = list(set(range(0,self.nodesCount))-set(self.topological))
-			print(remaining)
 			if remaining:
 				nextNode = remaining[0]
 
